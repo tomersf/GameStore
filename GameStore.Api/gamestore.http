@@ -1,1 +1,29 @@
-GET http://localhost:5028
+GET http://localhost:5028/games
+
+
+###
+GET http://localhost:5028/games/23728790-f7ba-46fc-966f-6f171e96633e
+
+###
+POST http://localhost:5028/games
+Content-Type: application/json
+
+{
+  "genre": "Family",
+  "price": 9.99,
+  "releaseDate": "2024-07-01"
+}
+
+###
+PUT http://localhost:5028/games/624408fe-0612-41a5-b6ad-cf3a0349d376
+Content-Type: application/json
+
+{
+  "name": "Updated Game Name",
+  "genre": "Family",
+  "price": 9.99,
+  "releaseDate": "2024-07-01"
+}
+
+###
+DELETE http://localhost:5028/games/624408fe-0612-41a5-b6ad-cf3a0349d376
