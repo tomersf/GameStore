@@ -2,7 +2,7 @@ GET http://localhost:5028/games
 
 
 ###
-GET http://localhost:5028/games/23728790-f7ba-46fc-966f-6f171e96633e
+GET http://localhost:5028/games/1683f699-5ec6-4535-bea9-22afd97dc67f
 
 ###
 POST http://localhost:5028/games
@@ -27,3 +27,6 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:5028/games/624408fe-0612-41a5-b6ad-cf3a0349d376
+
+###
+GET http://localhost:5028/genres
