@@ -1,13 +1,21 @@
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connString = builder.Configuration.GetConnectionString("GameStore");
+builder.Services.AddSqlite<GameStoreContext>(connString);
+
+builder.Services.AddTransient<GameDataLogger>();
+builder.Services.AddSingleton<GameStoreData>();
+
 var app = builder.Build();
 
-GameStoreData data = new();
+app.MapGames();
+app.MapGenres();
 
-app.MapGames(data);
-app.MapGenres(data);
+app.MigrateDb();
 
 app.Run();

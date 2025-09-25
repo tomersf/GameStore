@@ -38,6 +38,7 @@ public class GameStoreData
                 Id = Guid.NewGuid(),
                 Name = "The Legend of Zelda: Breath of the Wild",
                 Genre = _genres[0],
+                GenreId = _genres[0].Id,
                 Price = 59.99m,
                 ReleaseDate = new DateOnly(2017, 3, 3),
                 Description =
@@ -48,6 +49,7 @@ public class GameStoreData
                 Id = Guid.NewGuid(),
                 Name = "God of War",
                 Genre = _genres[1],
+                GenreId = _genres[1].Id,
                 Price = 49.99m,
                 ReleaseDate = new DateOnly(2018, 4, 20),
                 Description =
@@ -58,6 +60,7 @@ public class GameStoreData
                 Id = Guid.NewGuid(),
                 Name = "Red Dead Redemption 2",
                 Genre = _genres[2],
+                GenreId = _genres[2].Id,
                 Price = 39.99m,
                 ReleaseDate = new DateOnly(2018, 10, 26),
                 Description =
