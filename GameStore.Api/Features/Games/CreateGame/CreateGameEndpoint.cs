@@ -8,40 +8,34 @@ public static class CreateGameEndpoint
 {
     public static void MapCreateGame(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/", (CreateGameDto gameDto, GameStoreData data, GameDataLogger logger) =>
-        {
-            var genre = data.GetGenre(gameDto.GenreId);
-            if (genre is null)
+        app.MapPost("/",
+            (CreateGameDto gameDto, GameStoreContext dbContext
+            ) =>
             {
-                return Results.BadRequest(new
-                    { Error = "Invalid genre ID." });
-            }
 
-            var game = new Game
-            {
-                Name = gameDto.Name,
-                Genre = genre,
-                GenreId = genre.Id,
-                Price = gameDto.Price,
-                ReleaseDate = gameDto.ReleaseDate,
-                Description = gameDto.Description
-            };
-
-            data.AddGame(game);
-            
-            logger.PrintGames();
-            
-            return Results.CreatedAtRoute(EndpointNames.GetGame,
-                new
+                var game = new Game
                 {
-                    id = game.Id,
-                }, new GameDetailsDto(
-                    game.Id,
-                    game.Name,
-                    game.Genre.Id,
-                    game.Price,
-                    game.ReleaseDate,
-                    game.Description));
-        }).WithParameterValidation();
+                    Name = gameDto.Name,
+                    GenreId = gameDto.GenreId,
+                    Price = gameDto.Price,
+                    ReleaseDate = gameDto.ReleaseDate,
+                    Description = gameDto.Description
+                };
+
+                dbContext.Games.Add(game);
+                dbContext.SaveChanges();
+
+                return Results.CreatedAtRoute(EndpointNames.GetGame,
+                    new
+                    {
+                        id = game.Id,
+                    }, new GameDetailsDto(
+                        game.Id,
+                        game.Name,
+                        game.GenreId,
+                        game.Price,
+                        game.ReleaseDate,
+                        game.Description));
+            }).WithParameterValidation();
     }
 }

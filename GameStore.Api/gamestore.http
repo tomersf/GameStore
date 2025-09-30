@@ -9,9 +9,11 @@ POST http://localhost:5028/games
 Content-Type: application/json
 
 {
-  "genre": "Family",
+  "genreId": "1868DBA6-0869-4B0F-8544-CB6BC44DF606",
   "price": 9.99,
-  "releaseDate": "2024-07-01"
+  "releaseDate": "2024-07-01",
+  "name": "Test Game",
+  "description": "This is a test game description."
 }
 
 ###
@@ -26,7 +28,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5028/games/624408fe-0612-41a5-b6ad-cf3a0349d376
+DELETE http://localhost:5028/games/865e94b8-3c98-4788-acf4-d3664abc95dd
 
 ###
 GET http://localhost:5028/genres
