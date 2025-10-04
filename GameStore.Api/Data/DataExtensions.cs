@@ -5,25 +5,26 @@ namespace GameStore.Api.Data;
 
 public static class DataExtensions
 {
-    public static void InitializeDb(this WebApplication app)
+    public static async Task InitializeDbAsync(this WebApplication app)
     {
-        app.MigrateDb();
-        app.SeedDb();
+        await app.MigrateDbAsync();
+        await app.SeedDbAsync();
+        app.Logger.LogInformation(18, "Database initialized!");
     }
-    
-    private static void MigrateDb(this WebApplication app)
+
+    private static async Task MigrateDbAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<GameStoreContext>();
-        db.Database.Migrate();
+        await db.Database.MigrateAsync();
     }
 
-    private static void SeedDb(this WebApplication app)
+    private static async Task SeedDbAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<GameStoreContext>();
         if (db.Genres.Any()) return;
-        
+
         db.Genres.AddRange(
             new Genre
             {
@@ -38,6 +39,6 @@ public static class DataExtensions
             {
                 Name = "Strategy"
             });
-        db.SaveChanges();
+        await db.SaveChangesAsync();
     }
 }

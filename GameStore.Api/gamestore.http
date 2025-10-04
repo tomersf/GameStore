@@ -1,4 +1,4 @@
-GET http://localhost:5028/games
+GET http://localhost:5028/games?pageNumber=1&pageSize=5
 
 
 ###
