@@ -12,7 +12,7 @@ public static class GetGamesEndpoint
                 [AsParameters] GetGamesDto request) =>
             {
                 var skipCount = (request.PageNumber - 1) * request.PageSize;
-                
+
                 var filteredGames = dbContext.Games.Where(game =>
                     string.IsNullOrEmpty(request.Name) ||
                     EF.Functions.Like(game.Name, $"%{request.Name}%"));
@@ -27,7 +27,8 @@ public static class GetGamesEndpoint
                             game.Name,
                             game.Genre!.Name,
                             game.Price,
-                            game.ReleaseDate))
+                            game.ReleaseDate,
+                            game.ImageUri))
                     .AsNoTracking()
                     .ToListAsync();
 
