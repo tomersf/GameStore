@@ -23,7 +23,8 @@ public static class GetGameEndpoint
                         game.Price,
                         game.ReleaseDate,
                         game.Description,
-                        game.ImageUri))
+                        game.ImageUri,
+                        game.LastUpdatedBy))
                     : Results.NotFound();
             }).WithName(EndpointNames.GetGame);
     }

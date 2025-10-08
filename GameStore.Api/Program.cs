@@ -1,4 +1,5 @@
 using GameStore.Api.Data;
+using GameStore.Api.Features.Baskets;
 using GameStore.Api.Features.Games;
 using GameStore.Api.Features.Genres;
 using GameStore.Api.Shared.ErrorHandling;
@@ -27,23 +28,23 @@ builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 builder.Services.AddHttpContextAccessor()
     .AddSingleton<FileUploader>();
 
+builder.Services.AddAuthentication()
+    .AddJwtBearer(options => { options.MapInboundClaims = false; });
+
 var app = builder.Build();
 
 app.UseStaticFiles();
 
 app.MapGames();
 app.MapGenres();
+app.MapBaskets();
 
 app.UseHttpLogging();
 
 if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
-}
 else
-{
     app.UseExceptionHandler();
-}
 
 app.UseStatusCodePages();
 
