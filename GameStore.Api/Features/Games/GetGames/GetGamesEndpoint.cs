@@ -38,6 +38,6 @@ public static class GetGamesEndpoint
                     (int)Math.Ceiling((double)totalGames / request.PageSize);
 
                 return new GamesPageDto(totalPages, gamesOnPage);
-            });
+            }).AllowAnonymous();
     }
 }

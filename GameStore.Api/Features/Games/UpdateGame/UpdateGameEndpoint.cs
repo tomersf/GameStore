@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Games.Constants;
+using GameStore.Api.Shared.Authorization;
 using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -12,49 +13,52 @@ public static class UpdateGameEndpoint
     public static void MapUpdateGame(this IEndpointRouteBuilder app)
     {
         app.MapPut("/{id}",
-            async (Guid id, [FromForm] UpdateGameDto gameDto,
-                GameStoreContext dbContext, FileUploader fileUploader,
-                ClaimsPrincipal user) =>
-            {
-                var currentUserId =
-                    user.FindFirstValue(JwtRegisteredClaimNames.Sub);
-
-                if (string.IsNullOrEmpty(currentUserId))
+                async (Guid id, [FromForm] UpdateGameDto gameDto,
+                    GameStoreContext dbContext, FileUploader fileUploader,
+                    ClaimsPrincipal user) =>
                 {
-                    return Results.Unauthorized();
-                }
+                    var currentUser =
+                        user.FindFirstValue(JwtRegisteredClaimNames.Email) ??
+                        user.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
-                var existingGame = await dbContext.Games.FindAsync(id);
-                if (existingGame is null)
-                {
-                    return Results.NotFound();
-                }
-
-                if (gameDto.ImageFile is not null)
-                {
-                    var fileUploadResult =
-                        await fileUploader.UploadFileAsync(gameDto.ImageFile,
-                            StorageNames.GameImagesFolder);
-
-                    if (!fileUploadResult.IsSuccess)
+                    if (string.IsNullOrEmpty(currentUser))
                     {
-                        return Results.BadRequest(new
-                            { message = fileUploadResult.ErrorMessage });
+                        return Results.Unauthorized();
                     }
 
-                    existingGame.ImageUri = fileUploadResult.FileUrl!;
-                }
+                    var existingGame = await dbContext.Games.FindAsync(id);
+                    if (existingGame is null)
+                    {
+                        return Results.NotFound();
+                    }
 
-                existingGame.Name = gameDto.Name;
-                existingGame.GenreId = gameDto.GenreId;
-                existingGame.Price = gameDto.Price;
-                existingGame.ReleaseDate = gameDto.ReleaseDate;
-                existingGame.Description = gameDto.Description;
-                existingGame.LastUpdatedBy = currentUserId;
+                    if (gameDto.ImageFile is not null)
+                    {
+                        var fileUploadResult =
+                            await fileUploader.UploadFileAsync(
+                                gameDto.ImageFile,
+                                StorageNames.GameImagesFolder);
 
-                await dbContext.SaveChangesAsync();
+                        if (!fileUploadResult.IsSuccess)
+                        {
+                            return Results.BadRequest(new
+                                { message = fileUploadResult.ErrorMessage });
+                        }
 
-                return Results.NoContent();
-            }).WithParameterValidation().DisableAntiforgery();
+                        existingGame.ImageUri = fileUploadResult.FileUrl!;
+                    }
+
+                    existingGame.Name = gameDto.Name;
+                    existingGame.GenreId = gameDto.GenreId;
+                    existingGame.Price = gameDto.Price;
+                    existingGame.ReleaseDate = gameDto.ReleaseDate;
+                    existingGame.Description = gameDto.Description;
+                    existingGame.LastUpdatedBy = currentUser;
+
+                    await dbContext.SaveChangesAsync();
+
+                    return Results.NoContent();
+                }).WithParameterValidation().DisableAntiforgery()
+            .RequireAuthorization(Policies.AdminAccess);
     }
 }

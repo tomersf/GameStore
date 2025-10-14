@@ -10,6 +10,6 @@ public static class GetGenresEndpoint
         app.MapGet("/",
             async (GameStoreContext dbContext) => await dbContext.Genres
                 .Select(genre => new GenreDto(genre.Id, genre.Name))
-                .AsNoTracking().ToListAsync());
+                .AsNoTracking().ToListAsync()).AllowAnonymous();
     }
 }
