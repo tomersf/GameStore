@@ -1,7 +1,9 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+
 namespace GameStore.Api.Shared.FileUpload;
 
-public class FileUploader(IWebHostEnvironment environment,
-    IHttpContextAccessor httpContextAccessor)
+public class FileUploader(BlobServiceClient blobServiceClient)
 {
     public async Task<FileUploadResult> UploadFileAsync(IFormFile? file,
         string folder)
@@ -23,7 +25,7 @@ public class FileUploader(IWebHostEnvironment environment,
 
         var permittedExtensions = new[] { ".jpg", ".jpeg", ".png" };
         var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        
+
         if (string.IsNullOrEmpty(fileExtension) ||
             !permittedExtensions.Contains(fileExtension))
         {
@@ -32,24 +34,23 @@ public class FileUploader(IWebHostEnvironment environment,
                 "Invalid file type.";
             return result;
         }
-        
-        var uploadFolder = Path.Combine(environment.WebRootPath, folder);
-        if (!Directory.Exists(uploadFolder))
-        {
-            Directory.CreateDirectory(uploadFolder);
-        }
-        
-        var safeFileName = $"{Guid.NewGuid()}{fileExtension}";
-        var fullPath = Path.Combine(uploadFolder, safeFileName);
 
-        await using var stream = new FileStream(fullPath, FileMode.Create);
-        await file.CopyToAsync(stream);
-        
-        var httpContext = httpContextAccessor.HttpContext;
-        var fileUrl = $"{httpContext?.Request.Scheme}://{httpContext?.Request.Host}/{folder}/{safeFileName}";
-        
+        var containerClient = blobServiceClient.GetBlobContainerClient(folder);
+        await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+
+        var safeFileName = $"{Guid.NewGuid()}{fileExtension}";
+
+        var blobClient = containerClient.GetBlobClient(safeFileName);
+        await blobClient.DeleteIfExistsAsync();
+
+        await using var fileStream = file.OpenReadStream();
+        await blobClient.UploadAsync(fileStream, new BlobHttpHeaders
+        {
+            ContentType = file.ContentType,
+        });
+
         result.IsSuccess = true;
-        result.FileUrl = fileUrl;
+        result.FileUrl = blobClient.Uri.ToString();
         return result;
     }
 }

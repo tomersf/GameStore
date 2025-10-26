@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using GameStore.Api.Data;
 using GameStore.Api.Features.Baskets;
 using GameStore.Api.Features.Baskets.Authorization;
@@ -28,17 +29,13 @@ builder.Services.AddHttpLogging(options =>
 
 builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 
-builder.Services.AddHttpContextAccessor()
-    .AddSingleton<FileUploader>();
-
+builder.AddFileUploader();
 builder.AddGameStoreAuthentication();
 builder.AddGameStoreAuthorization();
 builder.Services
     .AddSingleton<IAuthorizationHandler, BasketAuthorizationHandler>();
 
 var app = builder.Build();
-
-app.UseStaticFiles();
 
 app.UseAuthorization();
 

@@ -19,7 +19,7 @@ public static class UpdateGameEndpoint
                 {
                     var currentUser =
                         user.FindFirstValue(JwtRegisteredClaimNames.Email) ??
-                        user.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                        user.FindFirstValue(GameStoreClaimTypes.UserId);
 
                     if (string.IsNullOrEmpty(currentUser))
                     {

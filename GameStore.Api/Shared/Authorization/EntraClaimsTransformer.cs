@@ -1,18 +1,20 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace GameStore.Api.Shared.Authorization;
 
-public class KeycloakClaimsTransformer(
-    ILogger<KeycloakClaimsTransformer> logger)
+public class EntraClaimsTransformer(
+    ILogger<EntraClaimsTransformer> logger)
 {
+    private const string ScopeClaimType = "scp";
+    private const string OidClaimType = "oid";
+
     public void Transform(TokenValidatedContext context)
     {
         var identity = context.Principal?.Identity as ClaimsIdentity;
 
-        identity.TransformScopeClaim(GameStoreClaimTypes.Scope);
-        identity.MapUserIdClaim(JwtRegisteredClaimNames.Sub);
+        identity.TransformScopeClaim(ScopeClaimType);
+        identity.MapUserIdClaim(OidClaimType);
         context.Principal.LogAllClaims(logger);
     }
 }
