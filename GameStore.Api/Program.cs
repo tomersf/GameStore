@@ -9,6 +9,7 @@ using GameStore.Api.Shared.ErrorHandling;
 using GameStore.Api.Shared.FileUpload;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services
 
 
 builder.Services.AddScoped<CdnUrlTransformer>();
+builder.Services.AddSingleton<AzureEventSourceLogForwarder>();
 
 var app = builder.Build();
 
@@ -51,7 +53,10 @@ app.UseHttpLogging();
 if (app.Environment.IsDevelopment())
     app.UseSwagger();
 else
+{
+    app.Services.GetRequiredService<AzureEventSourceLogForwarder>().Start();
     app.UseExceptionHandler();
+}
 
 app.UseStatusCodePages();
 

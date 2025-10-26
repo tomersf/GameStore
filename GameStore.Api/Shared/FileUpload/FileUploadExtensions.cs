@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Storage.Blobs;
 
 namespace GameStore.Api.Shared.FileUpload;
@@ -10,8 +11,18 @@ public static class FileUploadExtensions
             {
                 var config =
                     serviceProvider.GetRequiredService<IConfiguration>();
-                var connectionString = config.GetConnectionString("Blobs");
-                return new BlobServiceClient(connectionString);
+                var environment =
+                    serviceProvider.GetRequiredService<IHostEnvironment>();
+                var connectionString = config.GetConnectionString("Blobs") ??
+                                       throw new InvalidOperationException(
+                                           "Storage url is missing");
+
+                return environment.IsDevelopment()
+                    ? new BlobServiceClient(connectionString)
+                    : new BlobServiceClient(
+                        new Uri(connectionString),
+                        new DefaultAzureCredential()
+                    );
             })
             .AddSingleton<FileUploader>();
     }
