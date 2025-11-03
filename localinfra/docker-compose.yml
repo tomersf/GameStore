@@ -9,8 +9,8 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
       - keycloak_data:/opt/keycloak/data
-    command: ["start-dev"]
-    
+    command: [ "start-dev" ]
+  
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:3.35.0-arm64
     container_name: azurite
@@ -18,7 +18,19 @@ services:
       - "10000:10000"
     volumes:
       - azurite-data:/data
-    
+  
+  postgres:
+    image: postgres:17.4
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
 volumes:
-    keycloak_data:
-    azurite-data:
+  keycloak_data:
+  azurite-data:
+  pgdata:
