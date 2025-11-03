@@ -17,7 +17,7 @@ builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
 
 var connString = builder.Configuration.GetConnectionString("GameStore");
-builder.Services.AddSqlite<GameStoreContext>(connString);
+builder.Services.AddNpgsql<GameStoreContext>(connString);
 
 builder.Services.AddHttpLogging(options =>
 {

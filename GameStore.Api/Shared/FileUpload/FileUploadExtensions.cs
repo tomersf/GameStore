@@ -21,7 +21,12 @@ public static class FileUploadExtensions
                     ? new BlobServiceClient(connectionString)
                     : new BlobServiceClient(
                         new Uri(connectionString),
-                        new DefaultAzureCredential()
+                        new DefaultAzureCredential(
+                            new DefaultAzureCredentialOptions
+                            {
+                                ManagedIdentityClientId =
+                                    config["AZURE_CLIENT_ID"]
+                            })
                     );
             })
             .AddSingleton<FileUploader>();

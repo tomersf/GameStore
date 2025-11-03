@@ -1,3 +1,4 @@
+using GameStore.Api.Data.Configurations;
 using GameStore.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,4 +12,10 @@ public class GameStoreContext(DbContextOptions<GameStoreContext> options)
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<CustomerBasket> Baskets => Set<CustomerBasket>();
     public DbSet<BasketItem> BasketItems => Set<BasketItem>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(GameEntityConfiguration).Assembly);
+    }
 }
