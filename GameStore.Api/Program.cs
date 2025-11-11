@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails()
     .AddExceptionHandler<GlobalExceptionHandler>();
 
-var connString = builder.Configuration.GetConnectionString("GameStore");
+var connString = builder.Configuration.GetConnectionString("GameStoreDB");
 builder.Services.AddNpgsql<GameStoreContext>(connString);
 
 builder.Services.AddHttpLogging(options =>
